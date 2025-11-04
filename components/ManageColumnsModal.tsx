@@ -18,8 +18,10 @@ import {
   Typography,
   Paper,
   Box,
+  Divider,
+  useTheme,
 } from '@mui/material';
-import { Delete, Add } from '@mui/icons-material';
+import { Delete, Add, ViewColumn } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import {
@@ -36,6 +38,8 @@ interface Props {
 
 export default function ManageColumnsModal({ open, onClose }: Props) {
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const columns = useSelector((state: RootState) => state.table.columns);
   const [newColumnName, setNewColumnName] = useState('');
   const [newColumnField, setNewColumnField] = useState('');
@@ -68,6 +72,12 @@ export default function ManageColumnsModal({ open, onClose }: Props) {
     setErrorMessage('');
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAddColumn();
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -77,231 +87,393 @@ export default function ManageColumnsModal({ open, onClose }: Props) {
       PaperProps={{
         sx: {
           borderRadius: '16px',
-          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.12)',
-          backgroundImage: 'linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%)',
+          boxShadow: isDark 
+            ? '0 16px 48px rgba(0, 0, 0, 0.5)' 
+            : '0 16px 48px rgba(0, 0, 0, 0.12)',
+          background: isDark 
+            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+            : 'linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%)',
+          border: isDark ? '1px solid #334155' : 'none',
         }
       }}
     >
       <DialogTitle sx={{ 
-        borderBottom: '1px solid #e2e8f0',
+        borderBottom: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
         fontWeight: 700,
-        color: 'secondary.main',
+        color: isDark ? '#f1f5f9' : '#0f172a',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        pb: 2,
       }}>
-        Manage Columns
+        <ViewColumn sx={{ 
+          color: isDark ? '#38bdf8' : '#0284c7',
+          fontSize: '1.75rem',
+        }} />
+        <Box>
+          <Typography variant="h6" component="span" fontWeight={700}>
+            Manage Columns
+          </Typography>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: isDark ? '#94a3b8' : '#64748b',
+              fontWeight: 400,
+            }}
+          >
+            Add, remove, or toggle column visibility
+          </Typography>
+        </Box>
       </DialogTitle>
       
       <DialogContent sx={{ 
         p: 3,
-        '&::-webkit-scrollbar': { width: '8px' },
-        '&::-webkit-scrollbar-track': { background: '#f1f5f9' },
-        '&::-webkit-scrollbar-thumb': { background: '#cbd5e1', borderRadius: '4px' },
+        backgroundColor: isDark ? '#1e293b' : '#ffffff',
       }}>
         <Stack spacing={3}>
           {/* Add New Column Section */}
-          <Paper sx={{ 
-            p: 2, 
-            borderRadius: '12px',
-            border: '1px solid #e2e8f0',
-            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-          }}>
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-              Add New Column
-            </Typography>
-            <Stack direction="row" spacing={2} alignItems="flex-start">
-              <TextField
-                label="Column Name"
-                value={newColumnName}
-                onChange={(e) => setNewColumnName(e.target.value)}
-                placeholder="Display name"
-                fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    fontWeight: 500,
-                  },
-                }}
-              />
-              <TextField
-                label="Field Name"
-                value={newColumnField}
-                onChange={(e) => setNewColumnField(e.target.value)}
-                placeholder="Data field"
-                fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    fontWeight: 500,
-                  },
-                }}
-                helperText="No spaces, lowercase, e.g. 'department'"
-              />
-              <Button
-                variant="contained"
-                onClick={handleAddColumn}
-                startIcon={<Add />}
-                sx={{
-                  minWidth: '60px',
-                  borderRadius: '10px',
-                  height: '56px',
-                  fontWeight: 600,
-                  boxShadow: 'none',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 12px rgba(14, 165, 233, 0.2)',
-                  },
-                  transition: 'all 0.2s ease-in-out',
-                }}
-              >
-                Add
-              </Button>
-            </Stack>
-            {errorMessage && (
-              <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                {errorMessage}
-              </Typography>
-            )}
-          </Paper>
-
-          {/* Existing Columns List */}
-          <Paper sx={{ 
-            borderRadius: '12px',
-            overflow: 'hidden',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            
-          }}>
-            <List sx={{ p: 0 }}>
-              <ListItem 
-                divider
-                sx={{ 
-                  backgroundColor: '#f8fafc', 
-                  py: 1.5,
-                  px: 2,
-                }}
-              >
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle2" fontWeight="bold">
-                      Column Name
-                    </Typography>
-                  }
-                  secondary={
-                    <Typography variant="caption" color="text.secondary">
-                      Visible in data preview
-                    </Typography>
-                  }
-                />
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle2" fontWeight="bold">
-                      Field
-                    </Typography>
-                  }
-                  secondary={
-                    <Typography variant="caption" color="text.secondary">
-                      Data identifier
-                    </Typography>
-                  }
-                  sx={{ mx: 2 }}
-                />
-                <Typography variant="subtitle2" fontWeight="bold" sx={{ minWidth: 100, textAlign: 'center' }}>
-                  Visible
+          <Paper 
+            elevation={0}
+            sx={{ 
+              p: 2.5, 
+              borderRadius: '12px',
+              border: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
+              backgroundColor: isDark ? 'rgba(51, 65, 85, 0.3)' : 'rgba(248, 250, 252, 0.5)',
+              boxShadow: isDark 
+                ? '0 4px 12px rgba(0, 0, 0, 0.3)' 
+                : '0 2px 8px rgba(0, 0, 0, 0.05)',
+            }}
+          >
+            <Stack spacing={2}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Add sx={{ 
+                  color: isDark ? '#4ade80' : '#16a34a',
+                  fontSize: '1.25rem',
+                }} />
+                <Typography 
+                  variant="subtitle1" 
+                  fontWeight={600}
+                  sx={{ color: isDark ? '#f1f5f9' : '#0f172a' }}
+                >
+                  Add New Column
                 </Typography>
-                <Box sx={{ width: 40 }} />
-              </ListItem>
-
-              {columns.map((column) => (
-                <ListItem
-                  key={column.id}
-                  divider
-                  sx={{ 
-                    py: 1, 
-                    px: 2,
-                    '&:hover': { 
-                      backgroundColor: '#f8fafc',
-                    }
+              </Box>
+              
+              <Stack direction="row" spacing={2} alignItems="flex-start">
+                <TextField
+                  label="Column Name"
+                  value={newColumnName}
+                  onChange={(e) => setNewColumnName(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="e.g., Department"
+                  fullWidth
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '8px',
+                      backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                      '& fieldset': {
+                        borderColor: isDark ? '#475569' : '#e2e8f0',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: isDark ? '#38bdf8' : '#0284c7',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: isDark ? '#38bdf8' : '#0284c7',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: isDark ? '#94a3b8' : '#64748b',
+                    },
+                    '& .MuiInputBase-input': {
+                      color: isDark ? '#f1f5f9' : '#0f172a',
+                    },
+                  }}
+                />
+                <TextField
+                  label="Field Name"
+                  value={newColumnField}
+                  onChange={(e) => setNewColumnField(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="e.g., department"
+                  fullWidth
+                  size="small"
+                  helperText="Lowercase, no spaces"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '8px',
+                      backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                      '& fieldset': {
+                        borderColor: isDark ? '#475569' : '#e2e8f0',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: isDark ? '#38bdf8' : '#0284c7',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: isDark ? '#38bdf8' : '#0284c7',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: isDark ? '#94a3b8' : '#64748b',
+                    },
+                    '& .MuiInputBase-input': {
+                      color: isDark ? '#f1f5f9' : '#0f172a',
+                    },
+                    '& .MuiFormHelperText-root': {
+                      color: isDark ? '#64748b' : '#94a3b8',
+                    },
+                  }}
+                />
+                <Button
+                  variant="contained"
+                  onClick={handleAddColumn}
+                  startIcon={<Add />}
+                  sx={{
+                    minWidth: '120px',
+                    borderRadius: '8px',
+                    height: '40px',
+                    fontWeight: 600,
+                    boxShadow: 'none',
+                    backgroundColor: isDark ? '#38bdf8' : '#0284c7',
+                    color: isDark ? '#0f172a' : '#ffffff',
+                    '&:hover': {
+                      backgroundColor: isDark ? '#7dd3fc' : '#0369a1',
+                      transform: 'translateY(-2px)',
+                      boxShadow: isDark 
+                        ? '0 4px 12px rgba(56, 189, 248, 0.3)' 
+                        : '0 4px 12px rgba(2, 132, 199, 0.2)',
+                    },
+                    transition: 'all 0.2s ease-in-out',
                   }}
                 >
-                  <ListItemText
-                    primary={
-                      <Typography variant="body2" fontWeight={500}>
+                  Add
+                </Button>
+              </Stack>
+              
+              {errorMessage && (
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: isDark ? '#f87171' : '#dc2626',
+                    mt: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                  }}
+                >
+                  ⚠️ {errorMessage}
+                </Typography>
+              )}
+            </Stack>
+          </Paper>
+
+          <Divider sx={{ 
+            borderColor: isDark ? '#334155' : '#e2e8f0',
+            my: 1,
+          }} />
+
+          {/* Existing Columns List */}
+          <Box>
+            <Typography 
+              variant="subtitle1" 
+              fontWeight={600}
+              gutterBottom
+              sx={{ 
+                color: isDark ? '#f1f5f9' : '#0f172a',
+                mb: 2,
+              }}
+            >
+              Current Columns ({columns.length})
+            </Typography>
+            
+            <Paper 
+              elevation={0}
+              sx={{ 
+                borderRadius: '12px',
+                overflow: 'hidden',
+                border: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
+                boxShadow: isDark 
+                  ? '0 4px 12px rgba(0, 0, 0, 0.3)' 
+                  : '0 2px 8px rgba(0, 0, 0, 0.05)',
+                backgroundColor: isDark ? '#1e293b' : '#ffffff',
+              }}
+            >
+              <List sx={{ p: 0, maxHeight: '400px', overflow: 'auto' }}>
+                {/* Header Row */}
+                <ListItem 
+                  sx={{ 
+                    backgroundColor: isDark ? 'rgba(51, 65, 85, 0.5)' : '#f8fafc', 
+                    py: 1.5,
+                    borderBottom: isDark ? '2px solid #334155' : '2px solid #e2e8f0',
+                  }}
+                >
+                  <Box sx={{ width: '40%', px: 1 }}>
+                    <Typography variant="caption" fontWeight={600} sx={{ 
+                      color: isDark ? '#cbd5e1' : '#475569',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      Column Name
+                    </Typography>
+                  </Box>
+                  <Box sx={{ width: '35%', px: 1 }}>
+                    <Typography variant="caption" fontWeight={600} sx={{ 
+                      color: isDark ? '#cbd5e1' : '#475569',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      Field
+                    </Typography>
+                  </Box>
+                  <Box sx={{ width: '15%', px: 1, textAlign: 'center' }}>
+                    <Typography variant="caption" fontWeight={600} sx={{ 
+                      color: isDark ? '#cbd5e1' : '#475569',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      Visible
+                    </Typography>
+                  </Box>
+                  <Box sx={{ width: '10%' }} />
+                </ListItem>
+
+                {/* Column Rows */}
+                {columns.map((column, index) => (
+                  <ListItem
+                    key={column.id}
+                    sx={{ 
+                      py: 1.5,
+                      borderBottom: index !== columns.length - 1 
+                        ? (isDark ? '1px solid #334155' : '1px solid #e2e8f0')
+                        : 'none',
+                      '&:hover': { 
+                        backgroundColor: isDark ? 'rgba(51, 65, 85, 0.3)' : '#f8fafc',
+                      },
+                      transition: 'background-color 0.2s ease-in-out',
+                    }}
+                  >
+                    <Box sx={{ width: '40%', px: 1 }}>
+                      <Typography 
+                        variant="body2" 
+                        fontWeight={500}
+                        sx={{ color: isDark ? '#f1f5f9' : '#0f172a' }}
+                      >
                         {column.label}
                       </Typography>
-                    }
-                    secondary={
-                      <Typography variant="body2" color="text.secondary">
+                    </Box>
+                    <Box sx={{ width: '35%', px: 1 }}>
+                      <Typography 
+                        variant="body2"
+                        sx={{ 
+                          color: isDark ? '#94a3b8' : '#64748b',
+                          fontFamily: 'monospace',
+                        }}
+                      >
                         {column.field}
                       </Typography>
-                    }
-                    sx={{ 
-                      mr: 2,
-                      pr: 1,
-                      borderRight: '1px solid #e2e8f0',
-                    }}
-                  />
-                  <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 200 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={column.visible}
-                          onChange={() => dispatch(toggleColumnVisibility(column.id))}
-                          size="small"
-                        />
-                      }
-                      label=""
-                      sx={{ m: 0 }}
-                    />
-                    <IconButton
-                      size="small"
-                      onClick={() => dispatch(removeColumn(column.id))}
-                      sx={{ 
-                        color: 'error.main',
-                        '&:hover': {
-                          backgroundColor: 'error.lighter',
-                          transform: 'scale(1.1)',
-                        }
-                      }}
-                    >
-                      <Delete fontSize="small" />
-                    </IconButton>
-                  </Stack>
-                </ListItem>
-              ))}
+                    </Box>
+                    <Box sx={{ width: '15%', px: 1, display: 'flex', justifyContent: 'center' }}>
+                      <Checkbox
+                        checked={column.visible}
+                        onChange={() => dispatch(toggleColumnVisibility(column.id))}
+                        size="small"
+                        sx={{
+                          color: isDark ? '#64748b' : '#94a3b8',
+                          '&.Mui-checked': {
+                            color: isDark ? '#38bdf8' : '#0284c7',
+                          },
+                        }}
+                      />
+                    </Box>
+                    <Box sx={{ width: '10%', display: 'flex', justifyContent: 'flex-end' }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => dispatch(removeColumn(column.id))}
+                        sx={{ 
+                          color: isDark ? '#f87171' : '#dc2626',
+                          '&:hover': {
+                            backgroundColor: isDark 
+                              ? 'rgba(248, 113, 113, 0.1)' 
+                              : 'rgba(220, 38, 38, 0.1)',
+                            transform: 'scale(1.1)',
+                          },
+                          transition: 'all 0.2s ease-in-out',
+                        }}
+                      >
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </ListItem>
+                ))}
 
-              {columns.length === 0 && (
-                <ListItem>
-                  <ListItemText
-                    primary={
-                      <Typography color="text.secondary" align="center" sx={{ py: 2 }}>
-                        No columns added yet. Start by adding a new column above.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              )}
-            </List>
-          </Paper>
+                {columns.length === 0 && (
+                  <ListItem sx={{ py: 4 }}>
+                    <ListItemText
+                      primary={
+                        <Typography 
+                          align="center" 
+                          sx={{ 
+                            color: isDark ? '#64748b' : '#94a3b8',
+                          }}
+                        >
+                          No columns added yet. Start by adding a new column above.
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                )}
+              </List>
+            </Paper>
+          </Box>
         </Stack>
       </DialogContent>
 
       <DialogActions sx={{ 
-        borderTop: '1px solid #e2e8f0', 
+        borderTop: isDark ? '1px solid #334155' : '1px solid #e2e8f0', 
         p: 3, 
-        backgroundColor: '#f8fafc' 
+        backgroundColor: isDark ? '#1e293b' : '#f8fafc',
+        gap: 1,
       }}>
         <Button 
           onClick={onClose}
-          variant="text"
+          variant="outlined"
           sx={{ 
             borderRadius: '8px',
             textTransform: 'none',
             fontWeight: 600,
             px: 3,
+            borderColor: isDark ? '#475569' : '#e2e8f0',
+            color: isDark ? '#cbd5e1' : '#475569',
+            '&:hover': {
+              borderColor: isDark ? '#64748b' : '#cbd5e1',
+              backgroundColor: isDark ? 'rgba(100, 116, 139, 0.1)' : 'rgba(203, 213, 225, 0.1)',
+            },
           }}
         >
           Close
+        </Button>
+        <Button 
+          onClick={onClose}
+          variant="contained"
+          sx={{ 
+            borderRadius: '8px',
+            textTransform: 'none',
+            fontWeight: 600,
+            px: 3,
+            boxShadow: 'none',
+            backgroundColor: isDark ? '#38bdf8' : '#0284c7',
+            color: isDark ? '#0f172a' : '#ffffff',
+            '&:hover': {
+              backgroundColor: isDark ? '#7dd3fc' : '#0369a1',
+              transform: 'translateY(-1px)',
+              boxShadow: isDark 
+                ? '0 4px 12px rgba(56, 189, 248, 0.3)' 
+                : '0 4px 12px rgba(2, 132, 199, 0.2)',
+            },
+            transition: 'all 0.2s ease-in-out',
+          }}
+        >
+          Done
         </Button>
       </DialogActions>
     </Dialog>
