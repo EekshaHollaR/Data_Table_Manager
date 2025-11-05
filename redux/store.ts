@@ -1,10 +1,9 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import tableReducer from './features/tableSlice';
 import themeReducer from './features/themeSlice';
 
-// Fix for Redux Persist in Next.js
+// Create a noop storage for SSR
 const createNoopStorage = () => {
   return {
     getItem(_key: string) {
@@ -19,7 +18,10 @@ const createNoopStorage = () => {
   };
 };
 
-const storage = typeof window !== 'undefined' ? createWebStorage('local') : createNoopStorage();
+// Use dynamic import for storage to avoid SSR issues
+const storage = typeof window !== 'undefined' 
+  ? require('redux-persist/lib/storage').default
+  : createNoopStorage();
 
 const persistConfig = {
   key: 'root',
@@ -39,7 +41,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
 });
