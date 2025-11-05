@@ -41,8 +41,8 @@ A modern, feature-rich data table management application built with Next.js 14, 
 ### Installation
 
 **Clone the repository:**
-git clone <your-repository-url>
-cd dynamic-table-manager-app
+- git clone <your-repository-url>
+- cd dynamic-table-manager-app
 
 **Install dependencies:**
 npm install
@@ -51,48 +51,48 @@ npm install
 npm run dev
 
 **Open your browser:**
-Navigate to [http://localhost:3000](http://localhost:3000)
+- Navigate to [http://localhost:3000](http://localhost:3000)
 
 ### Build for Production
 
-npm run build
-npm start
+- npm run build
+- npm start
 
 ### Deploy to Vercel
 
-Install Vercel CLI
-npm i -g vercel
-Deploy
-vercel
+- Install Vercel CLI
+- npm i -g vercel
+- Deploy
+- vercel
 
 ## 📁 Project Structure
-dynamic-table-manager-app/
-├── src/
-│ ├── app/
-│ │ ├── layout.tsx # Root layout with providers
-│ │ ├── page.tsx # Home page
-│ │ └── globals.css # Global styles
-│ ├── components/
-│ │ ├── DataTable.tsx # Main table component
-│ │ ├── EditableCell.tsx # Inline cell editor
-│ │ ├── ImportExportButtons.tsx # CSV operations
-│ │ ├── ManageColumnsModal.tsx # Column management
-│ │ └── ThemeToggle.tsx # Theme switcher
-│ ├── redux/
-│ │ ├── store.ts # Redux store configuration
-│ │ ├── provider.tsx # Redux provider wrapper
-│ │ └── features/
-│ │ ├── tableSlice.ts # Table state management
-│ │ └── themeSlice.ts # Theme state management
-│ ├── types/
-│ │ └── table.types.ts # TypeScript interfaces
-│ └── utils/
-│ ├── csvHelpers.ts # CSV utilities
-│ └── theme.ts # MUI theme configuration
-├── package.json
-├── tsconfig.json
-├── next.config.js
-└── README.md
+- dynamic-table-manager-app/ 
+- ├── src/
+- │ ├── app/
+- │ │ ├── layout.tsx # Root layout with providers
+- │ │ ├── page.tsx # Home page
+- │ │ └── globals.css # Global styles
+- │ ├── components/
+- │ │ ├── DataTable.tsx # Main table component
+- │ │ ├── EditableCell.tsx # Inline cell editor
+- │ │ ├── ImportExportButtons.tsx # CSV operations
+- │ │ ├── ManageColumnsModal.tsx # Column management
+- │ │ └── ThemeToggle.tsx # Theme switcher
+- │ ├── redux/
+- │ │ ├── store.ts # Redux store configuration
+- │ │ ├── provider.tsx # Redux provider wrapper
+- │ │ └── features/
+- │ │ ├── tableSlice.ts # Table state management
+- │ │ └── themeSlice.ts # Theme state management
+- │ ├── types/
+- │ │ └── table.types.ts # TypeScript interfaces
+- │ └── utils/
+- │ ├── csvHelpers.ts # CSV utilities
+- │ └── theme.ts # MUI theme configuration
+- ├── package.json
+- ├── tsconfig.json
+- ├── next.config.js
+- └── README.md
 
 
 ## 🎯 Usage Guide
@@ -206,42 +206,42 @@ Click the **sun/moon icon** in the top right to switch between light and dark mo
 The main table component manages all table operations internally through Redux.
 
 ### EditableCell Props
-interface EditableCellProps {
-row: TableRow;
-field: string;
-isEditing: boolean;
-onUpdate: (field: string, value: any) => void;
-}
+- interface EditableCellProps {
+- row: TableRow;
+- field: string;
+- isEditing: boolean;
+- onUpdate: (field: string, value: any) => void;
+- }
 
 ### ManageColumnsModal Props
-interface ManageColumnsModalProps {
-open: boolean;
-onClose: () => void;
-}
+- interface ManageColumnsModalProps {
+- open: boolean;
+- onClose: () => void;
+- }
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-Create a `.env.local` file (optional):
-API Configuration (for future use)
-NEXT_PUBLIC_API_URL=http://localhost:3000
+- Create a `.env.local` file (optional):
+- API Configuration (for future use)
+- NEXT_PUBLIC_API_URL=http://localhost:3000
 
-Feature Flags
-NEXT_PUBLIC_ENABLE_IMPORT_EXPORT=true
-NEXT_PUBLIC_ENABLE_THEME_TOGGLE=true
-NEXT_PUBLIC_ENABLE_INLINE_EDIT=true
+- Feature Flags
+- NEXT_PUBLIC_ENABLE_IMPORT_EXPORT=true
+- NEXT_PUBLIC_ENABLE_THEME_TOGGLE=true
+- NEXT_PUBLIC_ENABLE_INLINE_EDIT=true
 
 ### Next.js Configuration
 
 **next.config.js:**
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-reactStrictMode: true,
-swcMinify: true,
-}
+- /** @type {import('next').NextConfig} */
+- const nextConfig = {
+- reactStrictMode: true,
+- swcMinify: true,
+- }
 
-module.exports = nextConfig
+- module.exports = nextConfig
 
 
 For issues, questions, or suggestions:
