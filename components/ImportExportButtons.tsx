@@ -9,7 +9,6 @@ import {
   Alert,
   useTheme,
   Box,
-  Typography,
 } from '@mui/material';
 import { CloudUpload, CloudDownload, InsertDriveFile } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -119,7 +118,14 @@ export default function ImportExportButtons() {
           style={{ display: 'none' }}
           id="csv-upload"
         />
-        <label htmlFor="csv-upload" style={{ display: 'flex', flex: { xs: 1, sm: 'initial' } }}>
+        <Box 
+          component="label" 
+          htmlFor="csv-upload" 
+          sx={{ 
+            display: 'flex',
+            flex: { xs: 1, sm: 'initial' },
+          }}
+        >
           <Button
             variant="outlined"
             component="span"
@@ -150,7 +156,7 @@ export default function ImportExportButtons() {
           >
             Import CSV
           </Button>
-        </label>
+        </Box>
 
         {/* Filename Input */}
         <TextField
@@ -242,7 +248,6 @@ export default function ImportExportButtons() {
           onClose={handleCloseSnackbar} 
           severity={snackbar.severity}
           variant="filled"
-          icon={snackbar.severity === 'success' ? '✓' : '⚠'}
           sx={{ 
             borderRadius: '10px',
             fontWeight: 500,
@@ -262,7 +267,6 @@ export default function ImportExportButtons() {
               color: snackbar.severity === 'success' 
                 ? (isDark ? '#0f172a' : '#ffffff')
                 : '#ffffff',
-              fontSize: '1.5rem',
             },
             '& .MuiAlert-message': {
               fontSize: '0.95rem',
